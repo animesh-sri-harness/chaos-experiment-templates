@@ -1,0 +1,138 @@
+name: aws-az-blackhole
+identity: awsazblackhole
+kind: ChaosExperimentTemplate
+apiVersion: litmuschaos.io/v1beta1
+spec:
+  infraType: KubernetesV2
+  faults:
+    - name: az-blackhole-ecy
+      identity: az-blackhole
+      revision: v1
+      isEnterprise: true
+      values:
+        - name: ASSUME_ROLE_ARN
+          value: <+input>
+        - name: AVAILABILITY_ZONES
+          value: <+input>
+        - name: REGION
+          value: <+input>
+        - name: VPC_IDS
+          value: <+input>
+        - name: TOTAL_CHAOS_DURATION
+          value: 120
+        - name: CHAOS_INTERVAL
+          value: 120
+      authEnabled: true
+  probes:
+    - name: nobl9-slo-probe-az1
+      identity: nobl9-slo-probe
+      isEnterprise: false
+      weightage: 10
+      duration: 30s
+      enableDataCollection: false
+      values:
+        - name: N9_SLO_NAME
+          value: <+experiment.variables.N9_SLO_NAME>
+        - name: N9_SLO_PROJECT
+          value: <+experiment.variables.N9_SLO_PROJECT>
+        - name: N9_SLO_OBJECTIVE
+          value: <+experiment.variables.N9_SLO_OBJECTIVE>
+        - name: N9_METRIC
+          value: <+experiment.variables.N9_METRIC>
+        - name: N9_TIMEFRAME
+          value: <+experiment.variables.N9_TIMEFRAME>
+    - name: nobl9-slo-probe-az2
+      identity: nobl9-slo-probe
+      isEnterprise: false
+      weightage: 10
+      duration: 30s
+      enableDataCollection: false
+      values:
+        - name: N9_SLO_NAME
+          value: <+experiment.variables.N9_SLO_NAME>
+        - name: N9_SLO_PROJECT
+          value: <+experiment.variables.N9_SLO_PROJECT>
+        - name: N9_SLO_OBJECTIVE
+          value: <+experiment.variables.N9_SLO_OBJECTIVE>
+        - name: N9_METRIC
+          value: <+experiment.variables.N9_METRIC>
+        - name: N9_TIMEFRAME
+          value: <+experiment.variables.N9_TIMEFRAME>
+  actions:
+    - name: k8s-delay-az1
+      identity: k8s-delay
+      isEnterprise: false
+      continueOnCompletion: false
+      values:
+        - name: DELAY
+          value: 120
+    - name: k8s-delay-az2
+      identity: k8s-delay
+      isEnterprise: false
+      continueOnCompletion: false
+      values:
+        - name: DELAY
+          value: 120
+  vertices:
+    - name: v-probe
+      start:
+        probes:
+          - name: nobl9-slo-probe-az1
+      end: {}
+    - name: v-d1
+      start:
+        actions:
+          - name: k8s-delay-az1
+      end:
+        probes:
+          - name: nobl9-slo-probe-az1
+    - name: v-fault
+      start:
+        faults:
+          - name: az-blackhole-ecy
+      end:
+        actions:
+          - name: k8s-delay-az1
+    - name: v-d2
+      start:
+        actions:
+          - name: k8s-delay-az2
+      end:
+        faults:
+          - name: az-blackhole-ecy
+    - name: v-rsl
+      start:
+        probes:
+          - name: nobl9-slo-probe-az2
+      end:
+        actions:
+          - name: k8s-delay-az2
+    - name: v-end
+      start: {}
+      end:
+        probes:
+          - name: nobl9-slo-probe-az2
+  cleanupPolicy: delete
+variables:
+  - name: N9_SLO_NAME
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_SLO_PROJECT
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_SLO_OBJECTIVE
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_METRIC
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_TIMEFRAME
+    value: <+input>
+    type: String
+    required: true
+revision: v1
+isDefault: true

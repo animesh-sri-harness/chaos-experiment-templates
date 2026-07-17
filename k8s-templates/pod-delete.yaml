@@ -1,0 +1,139 @@
+name: k8s-pod-delete
+identity: k8spoddelete
+kind: ChaosExperimentTemplate
+apiVersion: litmuschaos.io/v1beta1
+spec:
+  infraType: KubernetesV2
+  faults:
+    - name: pod-delete
+      identity: pod-delete
+      revision: "1"
+      isEnterprise: true
+      values:
+        - name: TARGET_CONTAINER
+          value: ""
+        - name: NODE_LABEL
+          value: ""
+        - name: PODS_AFFECTED_PERC
+          value: <+input>
+        - name: TARGET_WORKLOAD_KIND
+          value: <+input>
+        - name: TARGET_WORKLOAD_NAMESPACE
+          value: <+input>
+        - name: TARGET_WORKLOAD_NAMES
+          value: <+input>
+        - name: POD_AFFECTED_PERCENTAGE
+          value: "100"
+        - name: SEQUENCE
+          value: parallel
+        - name: TOTAL_CHAOS_DURATION
+          value: 60
+  probes:
+    - name: nobl9-slo-probe-pd1
+      identity: nobl9-slo-probe
+      isEnterprise: false
+      weightage: 10
+      duration: 30s
+      enableDataCollection: false
+      values:
+        - name: N9_SLO_NAME
+          value: <+experiment.variables.N9_SLO_NAME>
+        - name: N9_SLO_PROJECT
+          value: <+experiment.variables.N9_SLO_PROJECT>
+        - name: N9_SLO_OBJECTIVE
+          value: <+experiment.variables.N9_SLO_OBJECTIVE>
+        - name: N9_METRIC
+          value: <+experiment.variables.N9_METRIC>
+        - name: N9_TIMEFRAME
+          value: <+experiment.variables.N9_TIMEFRAME>
+    - name: nobl9-slo-probe-7vw
+      identity: nobl9-slo-probe
+      isEnterprise: false
+      weightage: 10
+      duration: 30s
+      enableDataCollection: false
+      values:
+        - name: N9_SLO_NAME
+          value: <+experiment.variables.N9_SLO_NAME>
+        - name: N9_SLO_PROJECT
+          value: <+experiment.variables.N9_SLO_PROJECT>
+        - name: N9_SLO_OBJECTIVE
+          value: <+experiment.variables.N9_SLO_OBJECTIVE>
+        - name: N9_METRIC
+          value: <+experiment.variables.N9_METRIC>
+        - name: N9_TIMEFRAME
+          value: <+experiment.variables.N9_TIMEFRAME>
+  actions:
+    - name: k8s-delay-pd1
+      identity: k8s-delay
+      isEnterprise: false
+      continueOnCompletion: false
+      values: []
+    - name: k8s-delay-pd2
+      identity: k8s-delay
+      isEnterprise: false
+      continueOnCompletion: false
+      values: []
+  vertices:
+    - name: v-probe
+      start:
+        probes:
+          - name: nobl9-slo-probe-pd1
+      end: {}
+    - name: v-d1
+      start:
+        actions:
+          - name: k8s-delay-pd1
+      end:
+        probes:
+          - name: nobl9-slo-probe-pd1
+    - name: v-start
+      start:
+        faults:
+          - name: pod-delete
+      end:
+        actions:
+          - name: k8s-delay-pd1
+    - name: v-d2
+      start:
+        actions:
+          - name: k8s-delay-pd2
+      end:
+        faults:
+          - name: pod-delete
+    - name: v-7xj
+      start:
+        probes:
+          - name: nobl9-slo-probe-7vw
+      end:
+        actions:
+          - name: k8s-delay-pd2
+    - name: v-end
+      start: {}
+      end:
+        probes:
+          - name: nobl9-slo-probe-7vw
+  cleanupPolicy: delete
+variables:
+  - name: N9_SLO_NAME
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_SLO_PROJECT
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_SLO_OBJECTIVE
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_METRIC
+    value: <+input>
+    type: String
+    required: true
+  - name: N9_TIMEFRAME
+    value: <+input>
+    type: String
+    required: true
+revision: v1
+isDefault: true
