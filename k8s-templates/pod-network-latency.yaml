@@ -32,6 +32,12 @@ spec:
       duration: 30s
       enableDataCollection: false
       values:
+        - name: N9_CLIENT_ID
+          value: <+experiment.variables.N9_CLIENT_ID>
+        - name: N9_CLIENT_SECRET
+          value: <+experiment.variables.N9_CLIENT_SECRET>
+        - name: N9_ORG
+          value: <+experiment.variables.N9_ORG>
         - name: N9_SLO_NAME
           value: <+experiment.variables.N9_SLO_NAME>
         - name: N9_SLO_PROJECT
@@ -49,6 +55,12 @@ spec:
       duration: 30s
       enableDataCollection: false
       values:
+        - name: N9_CLIENT_ID
+          value: <+experiment.variables.N9_CLIENT_ID>
+        - name: N9_CLIENT_SECRET
+          value: <+experiment.variables.N9_CLIENT_SECRET>
+        - name: N9_ORG
+          value: <+experiment.variables.N9_ORG>
         - name: N9_SLO_NAME
           value: <+experiment.variables.N9_SLO_NAME>
         - name: N9_SLO_PROJECT
@@ -110,25 +122,37 @@ spec:
         probes:
           - name: nobl9-slo-probe-rqs
 variables:
+  - name: N9_CLIENT_ID
+    value: <+input>
+    type: String
+    required: false
+  - name: N9_CLIENT_SECRET
+    value: <+input>
+    type: String
+    required: false
+  - name: N9_ORG
+    value: <+input>
+    type: String
+    required: false
   - name: N9_SLO_NAME
     value: <+input>
     type: String
-    required: true
+    required: false
   - name: N9_SLO_PROJECT
     value: <+input>
     type: String
-    required: true
+    required: false
   - name: N9_SLO_OBJECTIVE
     value: <+input>
     type: String
-    required: true
+    required: false
   - name: N9_METRIC
     value: <+input>
     type: String
-    required: true
+    required: false
   - name: N9_TIMEFRAME
     value: <+input>
     type: String
-    required: true
+    required: false
 revision: v1
 isDefault: true
