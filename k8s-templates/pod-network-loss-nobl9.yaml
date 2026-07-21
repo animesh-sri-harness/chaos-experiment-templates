@@ -17,123 +17,79 @@ spec:
         - name: TARGET_WORKLOAD_NAMES
           value: <+input>
         - name: TOTAL_CHAOS_DURATION
-          value: 120
+          value: 300
         - name: NETWORK_PACKET_LOSS_PERCENTAGE
           value: <+input>
         - name: POD_AFFECTED_PERCENTAGE
           value: 100
       authEnabled: false
   probes:
-    - name: nobl9-slo-probe-nwl1
-      identity: nobl9-slo-probe
+    - name: nobl9-probe-grk
+      identity: nobl9-errorbudgetremainingpercentage
       isEnterprise: false
       weightage: 10
       duration: 30s
       enableDataCollection: false
-      values:
-        - name: N9_CLIENT_ID
-          value: <+experiment.variables.N9_CLIENT_ID>
-        - name: N9_CLIENT_SECRET
-          value: <+experiment.variables.N9_CLIENT_SECRET>
-        - name: N9_ORG
-          value: <+experiment.variables.N9_ORG>
-        - name: N9_SLO_NAME
-          value: <+experiment.variables.N9_SLO_NAME>
-        - name: N9_SLO_PROJECT
-          value: <+experiment.variables.N9_SLO_PROJECT>
-        - name: N9_SLO_OBJECTIVE
-          value: <+experiment.variables.N9_SLO_OBJECTIVE>
-        - name: N9_METRIC
-          value: <+experiment.variables.N9_METRIC>
-        - name: N9_TIMEFRAME
-          value: <+experiment.variables.N9_TIMEFRAME>
-    - name: nobl9-slo-probe-rqs
-      identity: nobl9-slo-probe
+      values: []
+    - name: nobl9-probe-ban
+      identity: nobl9-errorbudgetremainingpercentage
       isEnterprise: false
       weightage: 10
       duration: 30s
       enableDataCollection: false
-      values:
-        - name: N9_CLIENT_ID
-          value: <+experiment.variables.N9_CLIENT_ID>
-        - name: N9_CLIENT_SECRET
-          value: <+experiment.variables.N9_CLIENT_SECRET>
-        - name: N9_ORG
-          value: <+experiment.variables.N9_ORG>
-        - name: N9_SLO_NAME
-          value: <+experiment.variables.N9_SLO_NAME>
-        - name: N9_SLO_PROJECT
-          value: <+experiment.variables.N9_SLO_PROJECT>
-        - name: N9_SLO_OBJECTIVE
-          value: <+experiment.variables.N9_SLO_OBJECTIVE>
-        - name: N9_METRIC
-          value: <+experiment.variables.N9_METRIC>
-        - name: N9_TIMEFRAME
-          value: <+experiment.variables.N9_TIMEFRAME>
+      values: []
   actions:
-    - name: k8s-delay-nwl1
-      identity: k8s-delay
+    - name: delay-120s-ijg
+      identity: delay-30s
       isEnterprise: false
       continueOnCompletion: false
       values: []
-    - name: k8s-delay-nwl2
-      identity: k8s-delay
+    - name: delay-120s-vng
+      identity: delay-30s
       isEnterprise: false
       continueOnCompletion: false
       values: []
   vertices:
-    - name: v-probe
+    - name: v-gte
       start:
         probes:
-          - name: nobl9-slo-probe-nwl1
+          - name: nobl9-probe-grk
       end: {}
-    - name: v-d1
+    - name: v-ioi
       start:
         actions:
-          - name: k8s-delay-nwl1
+          - name: delay-120s-ijg
       end:
         probes:
-          - name: nobl9-slo-probe-nwl1
+          - name: nobl9-probe-grk
     - name: v-d2o
       start:
         faults:
           - name: pod-network-loss-d18
       end:
         actions:
-          - name: k8s-delay-nwl1
-    - name: v-d2
+          - name: delay-120s-ijg
+    - name: v-vsi
       start:
         actions:
-          - name: k8s-delay-nwl2
+          - name: delay-120s-vng
       end:
         faults:
           - name: pod-network-loss-d18
-    - name: v-rsl
+    - name: v-bc3
       start:
         probes:
-          - name: nobl9-slo-probe-rqs
+          - name: nobl9-probe-ban
       end:
         actions:
-          - name: k8s-delay-nwl2
+          - name: delay-120s-vng
     - name: v-end
       start: {}
       end:
         probes:
-          - name: nobl9-slo-probe-rqs
+          - name: nobl9-probe-ban
   cleanupPolicy: delete
 variables:
-  - name: N9_CLIENT_ID
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_CLIENT_SECRET
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_ORG
-    value: <+input>
-    type: String
-    required: false
   - name: N9_SLO_NAME
     value: <+input>
     type: String
@@ -143,14 +99,6 @@ variables:
     type: String
     required: false
   - name: N9_SLO_OBJECTIVE
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_METRIC
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_TIMEFRAME
     value: <+input>
     type: String
     required: false

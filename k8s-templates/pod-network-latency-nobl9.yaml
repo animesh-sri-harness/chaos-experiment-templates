@@ -25,60 +25,28 @@ spec:
         - name: POD_AFFECTED_PERCENTAGE
           value: 100
   probes:
-    - name: nobl9-slo-probe-nlt1
-      identity: nobl9-slo-probe
+    - name: nobl9-probe-grk
+      identity: nobl9-errorbudgetremainingpercentage
       isEnterprise: false
       weightage: 10
       duration: 30s
       enableDataCollection: false
-      values:
-        - name: N9_CLIENT_ID
-          value: <+experiment.variables.N9_CLIENT_ID>
-        - name: N9_CLIENT_SECRET
-          value: <+experiment.variables.N9_CLIENT_SECRET>
-        - name: N9_ORG
-          value: <+experiment.variables.N9_ORG>
-        - name: N9_SLO_NAME
-          value: <+experiment.variables.N9_SLO_NAME>
-        - name: N9_SLO_PROJECT
-          value: <+experiment.variables.N9_SLO_PROJECT>
-        - name: N9_SLO_OBJECTIVE
-          value: <+experiment.variables.N9_SLO_OBJECTIVE>
-        - name: N9_METRIC
-          value: <+experiment.variables.N9_METRIC>
-        - name: N9_TIMEFRAME
-          value: <+experiment.variables.N9_TIMEFRAME>
-    - name: nobl9-slo-probe-rqs
-      identity: nobl9-slo-probe
+      values: []
+    - name: nobl9-probe-ban
+      identity: nobl9-errorbudgetremainingpercentage
       isEnterprise: false
       weightage: 10
       duration: 30s
       enableDataCollection: false
-      values:
-        - name: N9_CLIENT_ID
-          value: <+experiment.variables.N9_CLIENT_ID>
-        - name: N9_CLIENT_SECRET
-          value: <+experiment.variables.N9_CLIENT_SECRET>
-        - name: N9_ORG
-          value: <+experiment.variables.N9_ORG>
-        - name: N9_SLO_NAME
-          value: <+experiment.variables.N9_SLO_NAME>
-        - name: N9_SLO_PROJECT
-          value: <+experiment.variables.N9_SLO_PROJECT>
-        - name: N9_SLO_OBJECTIVE
-          value: <+experiment.variables.N9_SLO_OBJECTIVE>
-        - name: N9_METRIC
-          value: <+experiment.variables.N9_METRIC>
-        - name: N9_TIMEFRAME
-          value: <+experiment.variables.N9_TIMEFRAME>
+      values: []
   actions:
-    - name: k8s-delay-nlt1
-      identity: k8s-delay
+    - name: delay-120s-ijg
+      identity: delay-30s
       isEnterprise: false
       continueOnCompletion: false
       values: []
-    - name: k8s-delay-nlt2
-      identity: k8s-delay
+    - name: delay-120s-vng
+      identity: delay-30s
       isEnterprise: false
       continueOnCompletion: false
       values: []
@@ -86,54 +54,42 @@ spec:
     - name: v-probe
       start:
         probes:
-          - name: nobl9-slo-probe-nlt1
+          - name: nobl9-probe-grk
       end: {}
     - name: v-d1
       start:
         actions:
-          - name: k8s-delay-nlt1
+          - name: delay-120s-ijg
       end:
         probes:
-          - name: nobl9-slo-probe-nlt1
+          - name: nobl9-probe-grk
     - name: v-d2o
       start:
         faults:
           - name: pod-network-latency-d18
       end:
         actions:
-          - name: k8s-delay-nlt1
+          - name: delay-120s-ijg
     - name: v-d2
       start:
         actions:
-          - name: k8s-delay-nlt2
+          - name: delay-120s-vng
       end:
         faults:
           - name: pod-network-latency-d18
     - name: v-rsl
       start:
         probes:
-          - name: nobl9-slo-probe-rqs
+          - name: nobl9-probe-ban
       end:
         actions:
-          - name: k8s-delay-nlt2
+          - name: delay-120s-vng
     - name: v-end
       start: {}
       end:
         probes:
-          - name: nobl9-slo-probe-rqs
+          - name: nobl9-probe-ban
 variables:
-  - name: N9_CLIENT_ID
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_CLIENT_SECRET
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_ORG
-    value: <+input>
-    type: String
-    required: false
   - name: N9_SLO_NAME
     value: <+input>
     type: String
@@ -143,14 +99,6 @@ variables:
     type: String
     required: false
   - name: N9_SLO_OBJECTIVE
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_METRIC
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_TIMEFRAME
     value: <+input>
     type: String
     required: false
