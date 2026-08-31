@@ -1,0 +1,171 @@
+identity: nobl9-errorbudgetremainingpercentage
+
+name: nobl9-probe
+
+description: ""
+
+tags: []
+
+hubRef: Merck
+
+type: containerProbe
+
+infrastructureType: Kubernetes
+
+probeProperties:
+
+    containerProbe:
+
+        comparator:
+
+            type: float
+
+            value: <+input>
+
+            criteria: '>='
+
+        image: googlear-remote.oci.merck.com/gar-prod-setup/harness-public/harness/delegate:26.03.88801
+
+        imagePullPolicy: IfNotPresent
+
+        command:
+
+            - /bin/sh
+
+            - -c
+
+        args: |-
+
+            curl -s -k -LO https://app.harness.io/public/shared/tools/chaos/custom-probes/nobl9/nobl9_slo.sh
+
+            echo "insecure" >> ~/.curlrc
+
+            chmod +x nobl9_slo.sh
+
+            ./nobl9_slo.sh
+
+        env:
+
+            - name: N9_CLIENT_ID
+
+              value: LZ0XGa6W8pOrn3PQ
+
+              valuefrom:
+
+            - name: N9_CLIENT_SECRET
+
+              value: secrets.getValue("account.nobl9")
+
+              valuefrom: null
+
+            - name: N9_ORG
+
+              value: merck-QNcBjAUvqSGf
+
+              valuefrom: null
+
+            - name: N9_SLO_NAME
+
+              value: <+input>
+
+              valuefrom: null
+
+            - name: N9_SLO_PROJECT
+
+              value: <+input>
+
+              valuefrom: null
+
+            - name: N9_SLO_OBJECTIVE
+
+              value: <+input>
+
+              valuefrom: null
+
+            - name: N9_METRIC
+
+              value: errorBudgetRemainingPercentage
+
+              valuefrom: null
+
+            - name: N9_TIMEFRAME
+
+              value: now-10m
+
+              valuefrom: null
+
+        namespace: ""
+
+        serviceAccountName: default
+
+        affinity: {}
+
+        podSecurityContext:
+
+            selinuxoptions: null
+
+            windowsoptions: null
+
+            runasuser: 0
+
+            runasgroup: null
+
+            runasnonroot: null
+
+            supplementalgroups: []
+
+            fsgroup: null
+
+            sysctls: []
+
+            fsgroupchangepolicy: null
+
+            seccompprofile: null
+
+        containerSecurityContext:
+
+            capabilities:
+
+                add: []
+
+                drop: []
+
+            privileged: false
+
+            selinuxoptions: null
+
+            windowsoptions: null
+
+            runasuser: null
+
+            runasgroup: null
+
+            runasnonroot: null
+
+            readonlyrootfilesystem: false
+
+            allowprivilegeescalation: false
+
+            procmount: null
+
+            seccompprofile: null
+
+runProperties:
+
+    timeout: 90s
+
+    interval: 5s
+
+    attempt: 3
+
+    pollingInterval: 30s
+
+    initialDelay: 1s
+
+    verbosity: debug
+
+revision: 0
+
+isDefault: false
+
+isRemoved: false

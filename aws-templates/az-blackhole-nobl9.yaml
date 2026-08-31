@@ -1,106 +1,183 @@
-name: aws-az-blackhole
+=name: aws-az-blackhole
+
 identity: awsazblackhole
+
 kind: ChaosExperimentTemplate
+
 apiVersion: litmuschaos.io/v1beta1
+
 spec:
-  infraType: KubernetesV2
-  faults:
-    - name: az-blackhole-ecy
-      identity: az-blackhole
-      revision: v1
-      isEnterprise: true
-      values:
-        - name: ASSUME_ROLE_ARN
-          value: <+input>
-        - name: AVAILABILITY_ZONES
-          value: <+input>
-        - name: REGION
-          value: <+input>
-        - name: VPC_IDS
-          value: <+input>
-        - name: TOTAL_CHAOS_DURATION
-          value: 120
-        - name: CHAOS_INTERVAL
-          value: 120
-      authEnabled: true
-  probes:
-    - name: nobl9-probe-grk
-      identity: nobl9-errorbudgetremainingpercentage
-      isEnterprise: false
-      weightage: 10
-      duration: 30s
-      enableDataCollection: false
-      values: []
-    - name: nobl9-probe-ban
-      identity: nobl9-errorbudgetremainingpercentage
-      isEnterprise: false
-      weightage: 10
-      duration: 30s
-      enableDataCollection: false
-      values: []
-  actions:
-    - name: delay-120s-ijg
-      identity: delay-30s
-      isEnterprise: false
-      continueOnCompletion: false
-      values: []
-    - name: delay-120s-vng
-      identity: delay-30s
-      isEnterprise: false
-      continueOnCompletion: false
-      values: []
-  vertices:
-    - name: v-probe
-      start:
-        probes:
-          - name: nobl9-probe-grk
-      end: {}
-    - name: v-d1
-      start:
-        actions:
-          - name: delay-120s-ijg
-      end:
-        probes:
-          - name: nobl9-probe-grk
-    - name: v-fault
-      start:
-        faults:
-          - name: az-blackhole-ecy
-      end:
-        actions:
-          - name: delay-120s-ijg
-    - name: v-d2
-      start:
-        actions:
-          - name: delay-120s-vng
-      end:
-        faults:
-          - name: az-blackhole-ecy
-    - name: v-rsl
-      start:
-        probes:
-          - name: nobl9-probe-ban
-      end:
-        actions:
-          - name: delay-120s-vng
-    - name: v-end
-      start: {}
-      end:
-        probes:
-          - name: nobl9-probe-ban
-  cleanupPolicy: delete
+
+    infraType: KubernetesV2
+
+    faults:
+
+        - name: az-blackhole-ecy
+
+          identity: az-blackhole
+
+          revision: v1
+
+          isEnterprise: true
+
+          values:
+
+            - name: ASSUME_ROLE_ARN
+
+              value: <+input>
+
+            - name: AVAILABILITY_ZONES
+
+              value: <+input>
+
+            - name: REGION
+
+              value: <+input>
+
+            - name: VPC_IDS
+
+              value: <+input>
+
+            - name: TOTAL_CHAOS_DURATION
+
+              value: 300
+
+            - name: CHAOS_INTERVAL
+
+              value: 300
+
+          authEnabled: true
+
+    probes:
+
+        - name: nobl9-probe-7l7
+
+          identity: nobl9-errorbudgetremainingpercentage
+
+          isEnterprise: false
+
+          weightage: 10
+
+          duration: 30s
+
+          enableDataCollection: false
+
+          values:
+
+            - name: N9_SLO_NAME
+
+              value: <+experiment.variables.N9_SLO_NAME>
+
+            - name: N9_SLO_PROJECT
+
+              value: <+experiment.variables.N9_SLO_PROJECT>
+
+            - name: N9_SLO_OBJECTIVE
+
+              value: <+experiment.variables.N9_SLO_OBJECTIVE>
+
+            - name: COMPARATOR_VALUE
+
+              value: <+experiment.variables.N9_ERROR_BUDGET_THRESHOLD>
+
+    actions:
+
+        - name: delay-120s-sv3
+
+          identity: delay-30s
+
+          isEnterprise: false
+
+          continueOnCompletion: false
+
+          values: []
+
+    vertices:
+
+        - name: v-kkm
+
+          start:
+
+            faults:
+
+                - name: az-blackhole-ecy
+
+          end: {}
+
+        - name: v-t0g
+
+          start:
+
+            actions:
+
+                - name: delay-120s-sv3
+
+          end:
+
+            faults:
+
+                - name: az-blackhole-ecy
+
+        - name: v-7nb
+
+          start:
+
+            probes:
+
+                - name: nobl9-probe-7l7
+
+          end:
+
+            actions:
+
+                - name: delay-120s-sv3
+
+        - name: v-end
+
+          start: {}
+
+          end:
+
+            probes:
+
+                - name: nobl9-probe-7l7
+
+    cleanupPolicy: delete
+
 variables:
-  - name: N9_SLO_NAME
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_SLO_PROJECT
-    value: <+input>
-    type: String
-    required: false
-  - name: N9_SLO_OBJECTIVE
-    value: <+input>
-    type: String
-    required: false
+
+    - name: N9_SLO_NAME
+
+      value: <+input>
+
+      type: String
+
+      required: true
+
+    - name: N9_SLO_PROJECT
+
+      value: <+input>
+
+      type: String
+
+      required: true
+
+    - name: N9_SLO_OBJECTIVE
+
+      value: <+input>
+
+      type: String
+
+      required: true
+
+    - name: N9_ERROR_BUDGET_THRESHOLD
+
+      value: <+input>
+
+      type: String
+
+      required: true
+
 revision: v1
+
 isDefault: true
